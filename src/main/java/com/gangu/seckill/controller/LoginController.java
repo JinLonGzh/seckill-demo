@@ -20,7 +20,7 @@ import javax.validation.Valid;
 public class LoginController {
 
     @Resource
-    private UserService itUserService;
+    private UserService UserService;
 
     @RequestMapping("/tologin")
     public String toLogin(){
@@ -30,7 +30,7 @@ public class LoginController {
     @PostMapping("/dologin")
     @ResponseBody
     public RespBean doLogin(@Valid LoginVo loginVo, HttpServletRequest request , HttpServletResponse response){
-        return itUserService.doLogin(loginVo,request,response);
+        return UserService.doLogin(loginVo,request,response);
 
     }
 

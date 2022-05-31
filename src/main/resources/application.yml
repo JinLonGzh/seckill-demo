@@ -17,7 +17,7 @@ spring:
 #      #启用h5应用缓存，默认禁用
 #      html-application-cache: true
 #    static-locations: classpath:/static/
-  # thymelaef配置
+  # thymeleaf配置
   thymeleaf:
     # 关闭缓存
     cache: false
@@ -46,27 +46,27 @@ spring:
       connection-test-query: SELECT 1
 
   # redis配置
-#  redis:
-#    #服务器地址
-#    host: 192.168.10.100
-#    #端口
-#    port: 6379
-#    #数据库
-#    database: 0
-#    #超时时间
-#    timeout: 10000ms
-#    #密码
-#    password: root
-#    lettuce:
-#      pool:
-#        #最大连接数，默认8
-#        max-active: 8
-#        #最大连接阻塞等待时间，默认-1
-#        max-wait: 10000ms
-#        #最大空闲连接，默认8
-#        max-idle: 200
-#        #最小空闲连接，默认0
-#        min-idle: 5
+  redis:
+    #服务器地址
+    host: 192.168.245.100
+    #端口
+    port: 6379
+    #数据库
+    database: 0
+    #超时时间
+    timeout: 10000ms
+    #密码
+    password: 123
+    lettuce:
+      pool:
+        #最大连接数，默认8
+        max-active: 8
+        #最大连接阻塞等待时间，默认-1
+        max-wait: 10000ms
+        #最大空闲连接，默认8
+        max-idle: 200
+        #最小空闲连接，默认0
+        min-idle: 5
 #  # RabbitMQ
 #  rabbitmq:
 #    # 服务器
@@ -111,6 +111,9 @@ mybatis:
   mapper-locations: classpath*:/mapper/*Mapper.xml
   # 配置MyBatis数据返回类型别名(默认别名是类名)
   type-aliases-package: com.gangu.seckill.pojo
+  configuration:
+    # 自动转驼峰
+    map-underscore-to-camel-case: true
 
 
 # MyBatis SQL打印(方法接口所在的包，不是Mapper.xml所在的包)

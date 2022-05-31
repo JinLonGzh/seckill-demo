@@ -10,6 +10,7 @@ import com.gangu.seckill.utils.UUIDUtil;
 import com.gangu.seckill.vo.LoginVo;
 import com.gangu.seckill.vo.RespBean;
 import com.gangu.seckill.vo.RespBeanEnum;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -25,10 +26,13 @@ import javax.servlet.http.HttpServletResponse;
  * @since 2022-05-27
  */
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private RedisTemplate redisTemplate;
 
     @Override
     public RespBean doLogin(LoginVo loginVo, HttpServletRequest request, HttpServletResponse response) {
@@ -55,10 +59,28 @@ public class UserServiceImpl implements UserService{
 
         //生成cookie
         String ticket = UUIDUtil.uuid();
-        request.getSession().setAttribute(ticket,user);
-        CookieUtil.setCookie(request,response,"userTicket",ticket);
+//        request.getSession().setAttribute(ticket,user);
+        redisTemplate.opsForValue().set("user:" + ticket, user);
+        CookieUtil.setCookie(request, response, "userTicket", ticket);
 
 
         return RespBean.success();
+    }
+
+    /**
+     * 根据Cookie获取用户
+     */
+    @Override
+    public User getUserByCookie(String userTicket, HttpServletRequest request, HttpServletResponse response) {
+        if (userTicket.isEmpty()) {
+            return null;
+        }
+
+        User user = (User) redisTemplate.opsForValue().get("user:" + userTicket);
+
+        if (user != null) {
+            CookieUtil.setCookie(request,response,"userTicket",userTicket);
+        }
+        return user;
     }
 }
