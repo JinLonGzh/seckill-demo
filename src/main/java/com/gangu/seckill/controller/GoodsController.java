@@ -41,7 +41,7 @@ public class GoodsController {
         Date nowDate = new Date();
 
         //秒杀状态
-        int seckillStatus = 0;//还未开始
+        int seckillStatus = 0;//0还未开始，1正在秒杀，2秒杀结束
         //秒杀倒计时
         int remainSeconds = 0;
 

@@ -53,12 +53,12 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
         order.setCreateDate(new Date());
         orderMapper.insert(order);
 
-//        //生成秒杀订单
-//        SeckillOrder seckillOrder = new SeckillOrder();
-//        seckillOrder.setUserId(user.getId());
-//        seckillOrder.setOrderId(order.getId());
-//        seckillOrder.setGoodsId(goodsVo.getId());
-//        seckillOrderMapper.save(seckillOrder);
+        //生成秒杀订单
+        SeckillOrder seckillOrder = new SeckillOrder();
+        seckillOrder.setUserId(user.getId());
+        seckillOrder.setOrderId(order.getId());
+        seckillOrder.setGoodsId(goodsVo.getId());
+        seckillOrderMapper.save(seckillOrder);
 
         return order;
     }
