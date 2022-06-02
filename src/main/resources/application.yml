@@ -105,7 +105,7 @@ spring:
 #        multiplier: 1
 
 
-#Mybatis-plus配置
+#Mybatis配置
 mybatis:
   # 配置Mapper.xml映射文件
   mapper-locations: classpath*:/mapper/*Mapper.xml

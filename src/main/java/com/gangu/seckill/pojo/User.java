@@ -2,6 +2,8 @@ package com.gangu.seckill.pojo;
 
 
 import java.time.LocalDateTime;
+import java.util.Date;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -20,14 +22,14 @@ public class User {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 用户ID shoujihaoma
+     * 用户ID，手机号码
      */
     private Long id;
 
     private String nickname;
 
     /**
-     * MD5二次加密
+     * MD5(MD5(pass明文+固定salt)+salt)
      */
     private String password;
 
@@ -41,17 +43,18 @@ public class User {
     /**
      * 注册时间
      */
-    private LocalDateTime registerDate;
+    private Date registerDate;
 
     /**
      * 最后一次登录时间
      */
-    private LocalDateTime lastLoginDate;
+    private Date lastLoginDate;
 
     /**
      * 登录次数
      */
     private Integer loginCount;
+
 
 
 
