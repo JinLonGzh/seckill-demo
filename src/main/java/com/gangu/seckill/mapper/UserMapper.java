@@ -14,4 +14,11 @@ import org.apache.ibatis.annotations.Param;
 public interface UserMapper{
 
     User selectById(@Param("id") String mobile);
+
+    /**
+     * 更改密码
+     * @Param
+     * @return
+     */
+    int updateById(User user);
 }

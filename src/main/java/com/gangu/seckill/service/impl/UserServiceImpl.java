@@ -17,14 +17,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * <p>
- * 服务实现类
- * </p>
- *
- * @author
- * @since 2022-05-27
- */
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -71,6 +64,7 @@ public class UserServiceImpl implements UserService {
      * 根据Cookie获取用户
      */
     @Override
+
     public User getUserByCookie(String userTicket, HttpServletRequest request, HttpServletResponse response) {
         if (userTicket.isEmpty()) {
             return null;
@@ -79,8 +73,31 @@ public class UserServiceImpl implements UserService {
         User user = (User) redisTemplate.opsForValue().get("user:" + userTicket);
 
         if (user != null) {
-            CookieUtil.setCookie(request,response,"userTicket",userTicket);
+            CookieUtil.setCookie(request, response, "userTicket", userTicket);
         }
         return user;
     }
+
+    /**
+     * 更改密码
+     * @Param
+     * @return
+     */
+    @Override
+    public RespBean updatePassword(String userTicket, String password,
+                                   HttpServletRequest request, HttpServletResponse response) {
+        User user = getUserByCookie(userTicket, request, response);
+        if (user == null) {
+            throw new GlobalException(RespBeanEnum.MOBILE_NOT_EXIST);
+        }
+        user.setPassword(MD5Util.inputPassToDBPass(password, user.getSlat()));
+        int result = userMapper.updateById(user);
+        if (1 == result) {
+            //删除Redis
+            redisTemplate.delete("user:" + userTicket);
+            return RespBean.success();
+        }
+        return RespBean.error(RespBeanEnum.PASSWORD_UPDATE_FAIL);
+    }
+
 }

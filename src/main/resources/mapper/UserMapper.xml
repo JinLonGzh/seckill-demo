@@ -14,6 +14,13 @@
         <result column="login_count" property="loginCount"/>
     </resultMap>
 
+    <!-- 更改密码-->
+    <update id="updateById">
+        update t_user
+        set password = #{password}
+        where id = #{id};
+    </update>
+
     <select id="selectById" resultType="com.gangu.seckill.pojo.User">
         select *
         from t_user

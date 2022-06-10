@@ -24,5 +24,10 @@
         values (#{userId}, #{goodsId}, #{deliveryAddrId}, #{goodsName}, #{goodsCount}, #{goodsPrice},
                 #{orderChannel}, #{status}, #{createDate});
     </insert>
+    <select id="selectOrderById" resultType="com.gangu.seckill.pojo.Order">
+        select *
+        from t_order
+        where id = #{orderId};
+    </select>
 
 </mapper>

@@ -24,4 +24,12 @@ public interface UserService {
      * 根据Cookie获取用户
      */
     User getUserByCookie(String userTicket, HttpServletRequest request, HttpServletResponse response);
+
+    /**
+     * 更改密码
+     * @Param
+     * @return
+     */
+    RespBean updatePassword(String userTicket, String password, HttpServletRequest request,
+                            HttpServletResponse response);
 }
