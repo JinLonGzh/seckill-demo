@@ -12,4 +12,7 @@ public interface SeckillOrderMapper {
 
 
     void save(SeckillOrder seckillOrder);
+
+    @Select("select id from t_order where user_id = #{userId} and goods_id = #{goodsId};")
+    Long getResult(@Param("userId") Long userId,@Param("goodsId") Long goodsId);
 }

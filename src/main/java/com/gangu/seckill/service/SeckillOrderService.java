@@ -11,4 +11,12 @@ public interface SeckillOrderService {
 
     //秒杀操作
     Order seckill(User user, GoodsVo goodsVo);
+
+    /**
+     * 获取秒杀结果
+     *
+     * @return orderId：成功，-1 失败，0 排队中
+     * @Param
+     */
+    Long getResult(User user, Long goodsId);
 }
