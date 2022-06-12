@@ -15,6 +15,7 @@ import com.gangu.seckill.vo.RespBeanEnum;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,8 @@ public class SeckillController implements InitializingBean {
     private RedisTemplate redisTemplate;
     @Resource
     private MQSender mqSender;
+    @Resource
+    private RedisScript<Boolean> script;
 
     private Map<Long, Boolean> EmptyStockMap = new HashMap<>();
 
@@ -102,6 +106,8 @@ public class SeckillController implements InitializingBean {
         }
         //预减库存
         Long stock = valueOperations.decrement("seckillGoods:" + goodsId);
+//        Long stock = (Long) redisTemplate.execute(script,
+//                Collections.singletonList("seckillGoods:" + goodsId), Collections.EMPTY_LIST);
         if (stock < 0) {
             EmptyStockMap.put(goodsId, true);   //
             valueOperations.increment("seckillGoods:" + goodsId);
@@ -117,8 +123,9 @@ public class SeckillController implements InitializingBean {
 
     /**
      * 获取秒杀结果
-     * @Param
+     *
      * @return orderId：成功，-1 失败，0 排队中
+     * @Param
      */
     @GetMapping("/result")
     @ResponseBody
@@ -126,7 +133,7 @@ public class SeckillController implements InitializingBean {
         if (user == null) {
             return RespBean.error(RespBeanEnum.SESSION_ERROR);
         }
-        Long orderId = seckillOrderService.getResult(user,goodsId);
+        Long orderId = seckillOrderService.getResult(user, goodsId);
         return RespBean.success(orderId);
     }
 

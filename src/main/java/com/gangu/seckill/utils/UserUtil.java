@@ -16,6 +16,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -30,13 +31,13 @@ public class UserUtil {
 			user.setId(13000000000L + i);
 			user.setLoginCount(1);
 			user.setNickname("user" + i);
-//            user.setRegisterDate(new Date());
+            user.setRegisterDate(new Date());
 			user.setSlat("1a2b3c");
 			user.setPassword(MD5Util.inputPassToDBPass("123456", user.getSlat()));
 			users.add(user);
 		}
 		System.out.println("create user");
-		 // //插入数据库
+		 //插入数据库
 		 Connection conn = getConn();
 		 String sql = "insert into t_user(login_count, nickname, register_date, slat, password, id)values(?,?,?,?,?,?)";
 		 PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -55,7 +56,7 @@ public class UserUtil {
 		 conn.close();
 		 System.out.println("insert to db");
 //		登录，生成userTicket
-		String urlString = "http://localhost:8080/login/doLogin";
+		String urlString = "http://localhost:8080/login/dologin";
 //		File file = new File("D:\\Users\\Administrator\\Desktop\\config.txt");
 		File file = new File("D:\\桌面\\config.txt");
 		if (file.exists()) {

@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
         CookieUtil.setCookie(request, response, "userTicket", ticket);
 
 
-        return RespBean.success();
+        return RespBean.success(ticket);
     }
 
     /**
