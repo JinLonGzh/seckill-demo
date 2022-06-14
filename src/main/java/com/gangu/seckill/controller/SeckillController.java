@@ -1,5 +1,6 @@
 package com.gangu.seckill.controller;
 
+import com.gangu.seckill.exception.GlobalException;
 import com.gangu.seckill.pojo.Order;
 import com.gangu.seckill.pojo.SeckillMessage;
 import com.gangu.seckill.pojo.SeckillOrder;
@@ -12,6 +13,10 @@ import com.gangu.seckill.utils.JsonUtil;
 import com.gangu.seckill.vo.GoodsVo;
 import com.gangu.seckill.vo.RespBean;
 import com.gangu.seckill.vo.RespBeanEnum;
+import com.wf.captcha.ArithmeticCaptcha;
+import com.wf.captcha.SpecCaptcha;
+import com.wf.captcha.base.Captcha;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -25,13 +30,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import java.util.Collections;
-import java.util.HashMap;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.*;
+import java.io.IOException;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 @RequestMapping("/seckill")
+@Slf4j
 public class SeckillController implements InitializingBean {
 
     @Resource
@@ -45,40 +54,8 @@ public class SeckillController implements InitializingBean {
     @Resource
     private RedisScript<Boolean> script;
 
+    //内存标记
     private Map<Long, Boolean> EmptyStockMap = new HashMap<>();
-
-    /**
-     * 秒杀操作
-     *
-     * @return
-     * @Param
-     */
-    @RequestMapping("/doSeckill2")
-    public String doSecKill2(Model model, User user, Long goodsId) {
-        if (user == null) {
-            return "login";
-        }
-        model.addAttribute("user", user);
-        GoodsVo goodsVo = goodsService.findGoodVoById(goodsId);
-        Integer stockCount = goodsVo.getStockCount(); //库存数量
-        //判断库存
-        if (stockCount < 1) {
-            model.addAttribute("errmsg", RespBeanEnum.EMPTY_STOCK.getMessage());
-            return "secKillFail";
-        }
-        //判断是否重复秒杀
-        SeckillOrder seckillOrder = seckillOrderService.getSeckillOrder(user.getId());
-        if (seckillOrder != null) {
-            model.addAttribute("errmsg", RespBeanEnum.REPEATE_ERROR.getMessage());
-            return "secKillFail";
-        }
-
-        Order order = seckillOrderService.seckill(user, goodsVo);
-
-        model.addAttribute("order", order);
-        model.addAttribute("goods", goodsVo);
-        return "orderDetail";
-    }
 
 
     /**
@@ -135,6 +112,34 @@ public class SeckillController implements InitializingBean {
         }
         Long orderId = seckillOrderService.getResult(user, goodsId);
         return RespBean.success(orderId);
+    }
+
+    /**
+     * 获取验证码
+     * @Param
+     * @return
+     */
+    @GetMapping("/captcha")
+    public void captcha(User user,HttpServletResponse response) throws Exception {
+        if (null == user) {
+            throw new GlobalException(RespBeanEnum.REQUEST_ILLEGAL);
+        }
+        // 设置请求头为输出图片类型
+        response.setContentType("image/jpg");
+        response.setHeader("Pragma", "No-cache");
+        response.setHeader("Cache-Control", "no-cache");
+        response.setDateHeader("Expires", 0);
+        //生成验证码，将结果放入redis
+        ArithmeticCaptcha captcha = new ArithmeticCaptcha(130, 32, 3);
+
+        redisTemplate.opsForValue().set("captcha:" + user.getId(), captcha.text
+                (), 300, TimeUnit.SECONDS);
+        try {
+            // 输出图片流
+            captcha.out(response.getOutputStream());
+        } catch (IOException e) {
+            log.error("验证码生成失败", e.getMessage());
+        }
     }
 
 
